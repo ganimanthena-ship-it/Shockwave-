@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SRM SEEE Guardian — Material 3 Academic Command Center</title>
+
+  <!-- Google Fonts: Inter & Roboto Flex for Material 3 Ergonomics -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Canvas Confetti for 90%+ Target Celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            // Material 3 Dynamic Tonal Palette (Indigo-Deep Violet & Warm Tonal Surfaces)
+            m3: {
+              primary: '#6750A4',
+              onPrimary: '#FFFFFF',
+              primaryContainer: '#EADDFF',
+              onPrimaryContainer: '#21005D',
+              secondary: '#625B71',
+              secondaryContainer: '#E8DEF8',
+              onSecondaryContainer: '#1D192B',
+              tertiary: '#7D5260',
+              tertiaryContainer: '#FFD8E4',
+              surface: '#FEF7FF',
+              surfaceDim: '#DED8E1',
+              surfaceBright: '#FEF7FF',
+              surfaceContainerLowest: '#FFFFFF',
+              surfaceContainerLow: '#F7F2FA',
+              surfaceContainer: '#F3EDF7',
+              surfaceContainerHigh: '#ECE6F0',
+              surfaceContainerHighest: '#E6E0E9',
+              onSurface: '#1D1B20',
+              onSurfaceVariant: '#49454F',
+              outline: '#79747E',
+              outlineVariant: '#CAC4D0',
+              error: '#B3261E',
+              errorContainer: '#F9DEDC',
+              onErrorContainer: '#410E0B',
+              success: '#146C2E',
+              successContainer: '#C4EED0',
+              onSuccessContainer: '#00210B',
+            }
+          },
+          boxShadow: {
+            'm3-1': '0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30)',
+            'm3-2': '0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30)',
+            'm3-3': '0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.30)',
+            'm3-4': '0px 6px 10px 4px rgba(0, 0, 0, 0.15), 0px 2px 3px 0px rgba(0, 0, 0, 0.30)',
+            'm3-5': '0px 8px 12px 6px rgba(0, 0, 0, 0.15), 0px 4px 4px 0px rgba(0, 0, 0, 0.30)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Smooth Interactive Cursor */
+    @media (pointer: fine) {
+      body {
+        cursor: none;
+      }
+      a, button, input, select, tr, .hover-target {
+        cursor: none !important;
+      }
+    }
+    #custom-cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background-color: #6750A4;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s cubic-bezier(0.2, 0, 0, 1), height 0.2s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s;
+    }
+    #custom-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid rgba(103, 80, 164, 0.45);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s cubic-bezier(0.2, 0, 0, 1), height 0.25s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s, background-color 0.25s;
+    }
+    .cursor-active #custom-cursor-ring {
+      width: 54px;
+      height: 54px;
+      border-color: #6750A4;
+      background-color: rgba(103, 80, 164, 0.08);
+      backdrop-filter: blur(1px);
+    }
+    .cursor-active #custom-cursor-dot {
+      width: 12px;
+      height: 12px;
+      background-color: #7D5260;
+    }
+
+    /* Zooming Card & Tilt Effects */
+    .zoom-surface {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+      will-change: transform;
+    }
+    .zoom-surface:hover {
+      transform: translateY(-5px) scale(1.012);
+      box-shadow: 0 16px 32px -8px rgba(103, 80, 164, 0.18), 0 6px 12px -4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Material 3 Ripple Animation */
+    .m3-ripple {
+      position: relative;
+      overflow: hidden;
+    }
+    .m3-ripple::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+      background-repeat: no-repeat;
+      background-position: 50%;
+      transform: scale(10, 10);
+      opacity: 0;
+      transition: transform .5s, opacity 1s;
+    }
+    .m3-ripple:active::after {
+      transform: scale(0, 0);
+      opacity: 0.3;
+      transition: 0s;
+    }
+
+    /* Ambient Subtle Mesh Background */
+    .mesh-gradient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+      background: radial-gradient(at 0% 0%, rgba(234, 221, 255, 0.4) 0px, transparent 50%),
+                  radial-gradient(at 100% 0%, rgba(255, 216, 228, 0.35) 0px, transparent 50%),
+                  radial-gradient(at 100% 100%, rgba(196, 238, 208, 0.3) 0px, transparent 50%),
+                  radial-gradient(at 0% 100%, rgba(232, 222, 248, 0.5) 0px, transparent 50%),
+                  #FEF7FF;
+    }
+
+    /* Critical Danger Pulse */
+    @keyframes detention-glitch {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(179, 38, 30, 0.35)); }
+      50% { transform: scale(1.008); filter: drop-shadow(0 0 25px rgba(179, 38, 30, 0.65)); }
+    }
+    .detention-banner-active {
+      animation: detention-glitch 2.4s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="text-m3-onSurface font-sans min-h-screen antialiased selection:bg-m3-primaryContainer selection:text-m3-onPrimaryContainer relative overflow-x-hidden">
+
+  <!-- Interactive Custom Cursor Rings -->
+  <div id="custom-cursor-dot"></div>
+  <div id="custom-cursor-ring"></div>
+
+  <!-- Ambient Dynamic Mesh Background -->
+  <div class="mesh-gradient-canvas"></div>
+
+  <!-- Top M3 Floating App Bar -->
+  <header class="sticky top-0 z-40 backdrop-blur-xl bg-m3-surface/85 border-b border-m3-outlineVariant/50 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+      
+      <!-- Brand & Section Identity -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-2xl bg-m3-primary text-white font-black flex items-center justify-center shadow-m3-2 transition-transform duration-300 hover:rotate-6">
+          <span class="text-xl tracking-tighter">SRM</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-m3-onSurface">SEEE Academic Guardian</h1>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-m3-primaryContainer text-m3-onPrimaryContainer border border-m3-primary/10">
+              Material 3 Engine
+            </span>
+          </div>
+          <p class="text-xs text-m3-onSurfaceVariant">SRM IST Tiruchirappalli • School of Electrical & Electronics Engineering</p>
+        </div>
+      </div>
+
+      <!-- Action Chips & Telemetry -->
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex flex-col text-right pr-2 border-r border-m3-outlineVariant/50">
+          <span class="text-[10px] uppercase font-bold tracking-wider text-m3-onSurfaceVariant">Live Reference</span>
+          <span id="headerLiveDate" class="text-xs font-semibold font-mono text-m3-primary">2026-09-28</span>
+        </div>
+
+        <button id="navAdvisorBtn" class="m3-ripple flex items-center gap-2 bg-m3-primaryContainer hover:bg-m3-primary text-m3-onPrimaryContainer hover:text-white px-4 py-2 rounded-full font-semibold text-xs transition duration-200 shadow-m3-1 hover:shadow-m3-2">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+          <span>Ask AI Advisor</span>
+        </button>
+
+        <button id="themeToggleBtn" title="Sound and Feedback toggle" class="p-2.5 rounded-full text-m3-onSurfaceVariant hover:bg-m3-surfaceContainerHighest transition">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Global Irreversible Alert Portal -->
+  <div id="criticalDetentionPortal" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 hidden"></div>
+
+  <!-- Primary Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Section 1: Dynamic M3 Control Hub (Section Select & Horizon Date Planning) -->
+    <section class="zoom-surface bg-m3-surfaceContainerLow/90 backdrop-blur-md rounded-3xl p-6 border border-m3-outlineVariant/40 shadow-m3-1">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-m3-outlineVariant/30 pb-4 mb-5">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 rounded-xl bg-m3-secondaryContainer text-m3-onSecondaryContainer">
+            <i data-lucide="layers" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-m3-onSurface">Cohort Selection & Academic Planning Horizon</h2>
+            <p class="text-xs text-m3-onSurfaceVariant">Configure target cut-off dates and section timetables to generate live remaining period projections[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].</p>
+          </div>
+        </div>
+        <span id="venuePillBadge" class="text-xs font-mono font-bold px-3 py-1 bg-white rounded-full text-m3-primary border border-m3-outlineVariant/40 shadow-sm">
+          Venue: IST 225
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Section Picker -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-m3-onSurfaceVariant uppercase tracking-wider">Class Section</label>
+          <div class="relative">
+            <select id="sectionSelector" class="w-full bg-m3-surfaceContainerHighest/70 border border-m3-outline/30 text-m3-onSurface text-xs sm:text-sm rounded-2xl p-3 pl-3.5 pr-8 focus:outline-none focus:ring-2 focus:ring-m3-primary transition font-medium">
+              <!-- Dynamically populated 10 Timetables -->
+            </select>
+          </div>
+          <p id="sectionDetailSubtext" class="text-[11px] text-m3-secondary font-medium truncate">7 active academic slots mapped[cite: 1]</p>
+        </div>
+
+        <!-- Today's Date -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-m3-onSurfaceVariant uppercase tracking-wider">Calculated Current Date</label>
+          <input type="date" id="systemDateInput" class="w-full bg-m3-surfaceContainerHighest/70 border border-m3-outline/30 text-m3-onSurface text-xs sm:text-sm rounded-2xl p-3 focus:outline-none focus:ring-2 focus:ring-m3-primary transition font-medium font-mono" />
+          <p class="text-[11px] text-m3-secondary font-medium">Synchronized with system calendar</p>
+        </div>
+
+        <!-- Planning Target Date -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-m3-onSurfaceVariant uppercase tracking-wider">Semester End / Target Date</label>
+          <input type="date" id="targetDateInput" class="w-full bg-m3-surfaceContainerHighest/70 border border-m3-outline/30 text-m3-onSurface text-xs sm:text-sm rounded-2xl p-3 focus:outline-none focus:ring-2 focus:ring-m3-primary transition font-medium font-mono" />
+          <p class="text-[11px] text-m3-secondary font-medium">Evaluation horizon cutoff</p>
+        </div>
+
+        <!-- Past Conducted Multiplier -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-m3-onSurfaceVariant uppercase tracking-wider">Past Semester Span (Weeks)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="pastWeeksConducted" min="1" max="22" value="9" class="w-full bg-m3-surfaceContainerHighest/70 border border-m3-outline/30 text-m3-onSurface text-xs sm:text-sm rounded-2xl p-3 focus:outline-none focus:ring-2 focus:ring-m3-primary font-bold text-center" />
+            <button id="btnRecalculateAll" class="m3-ripple bg-m3-primary hover:bg-m3-primary/90 text-white px-5 py-3 rounded-2xl font-bold text-xs transition duration-200 shadow-m3-2 flex items-center gap-1.5 shrink-0">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              <span>Recalculate</span>
+            </button>
+          </div>
+          <p class="text-[11px] text-m3-secondary font-medium">Historical lecture benchmark</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Visual Telemetry, OD Simulator & Chart Cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Column 1: KPI Statistics + OD Simulator (5 cols) -->
+      <div class="lg:col-span-4 space-y-4">
+        
+        <!-- Aggregate Attendance Card -->
+        <div class="zoom-surface bg-m3-surfaceContainerLowest rounded-3xl p-5 border border-m3-outlineVariant/50 shadow-m3-1 flex items-center justify-between relative overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-m3-primaryContainer/30 pointer-events-none"></div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-m3-onSurfaceVariant">Aggregate Current Standing</span>
+            <div id="kpiAggregatePct" class="text-4xl font-extrabold text-m3-onSurface tracking-tight mt-1 font-mono">--%</div>
+            <div class="mt-2">
+              <span id="kpiEligibilityBadge" class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-m3-surfaceContainerHighest text-m3-onSurface">
+                Calculating status...
+              </span>
+            </div>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-m3-primaryContainer text-m3-onPrimaryContainer flex items-center justify-center shadow-m3-1">
+            <i data-lucide="activity" class="w-7 h-7"></i>
+          </div>
+        </div>
+
+        <!-- Remaining Classes in Horizon Card -->
+        <div class="zoom-surface bg-m3-surfaceContainerLowest rounded-3xl p-5 border border-m3-outlineVariant/50 shadow-m3-1 flex items-center justify-between relative overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-m3-secondaryContainer/30 pointer-events-none"></div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-m3-onSurfaceVariant">Remaining Horizon Classes</span>
+            <div id="kpiRemainingLectures" class="text-4xl font-extrabold text-m3-onSurface tracking-tight mt-1 font-mono">--</div>
+            <p id="kpiRemainingDaysSubtitle" class="text-xs text-m3-onSurfaceVariant mt-1">Spanning upcoming working days</p>
+          </div>
+          <div class="w-14 h-14 rounded-2xl bg-m3-secondaryContainer text-m3-onSecondaryContainer flex items-center justify-center shadow-m3-1">
+            <i data-lucide="calendar" class="w-7 h-7"></i>
+          </div>
+        </div>
+
+        <!-- The Phase 2 OD & Medical Leave Simulator Surface -->
+        <div class="zoom-surface bg-gradient-to-br from-[#1D192B] to-[#2B233C] text-white rounded-3xl p-6 border border-m3-outline/20 shadow-m3-3">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-amber-400/20 text-amber-300">
+                <i data-lucide="award" class="w-4 h-4"></i>
+              </div>
+              <h3 class="text-xs font-bold tracking-wider uppercase text-amber-300">OD & Medical Leave Simulator</h3>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-slate-200">
+              Live Offset
+            </span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed mb-4">
+            Simulate SRM Condonation credit by adding approved On-Duty days (symposiums, hackathons) or certified medical sick days:
+          </p>
+
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <div class="bg-white/5 p-3 rounded-2xl border border-white/10">
+              <label class="text-[10px] font-bold text-slate-300 uppercase tracking-wider block mb-1">Approved OD Days</label>
+              <input type="number" id="inputSimulatorOd" min="0" max="35" value="0" class="w-full bg-white/10 border border-white/20 rounded-xl px-2.5 py-1.5 text-center text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-300 font-mono" />
+            </div>
+            <div class="bg-white/5 p-3 rounded-2xl border border-white/10">
+              <label class="text-[10px] font-bold text-slate-300 uppercase tracking-wider block mb-1">Medical Leave Days</label>
+              <input type="number" id="inputSimulatorMl" min="0" max="35" value="0" class="w-full bg-white/10 border border-white/20 rounded-xl px-2.5 py-1.5 text-center text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-300 font-mono" />
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+            <span class="text-slate-300">Projected Health with Leaves:</span>
+            <span id="simulatorProjectedPct" class="font-extrabold text-base text-emerald-400 font-mono">--%</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Column 2: M3 Visual Analytics Charts (8 cols) -->
+      <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+        
+        <!-- Doughnut Gauge Card -->
+        <div class="zoom-surface bg-m3-surfaceContainerLowest rounded-3xl p-5 border border-m3-outlineVariant/50 shadow-m3-1 flex flex-col justify-between">
+          <div class="flex items-center justify-between border-b border-m3-outlineVariant/20 pb-3">
+            <div>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-m3-onSurface">Attendance Health Doughnut</h3>
+              <p class="text-[11px] text-m3-onSurfaceVariant">Attended vs Deficit distribution</p>
+            </div>
+            <span class="p-1.5 rounded-xl bg-m3-surfaceContainerHighest text-m3-onSurfaceVariant">
+              <i data-lucide="pie-chart" class="w-4 h-4"></i>
+            </span>
+          </div>
+
+          <div class="relative h-48 w-full flex items-center justify-center my-2">
+            <canvas id="gaugeHealthCanvas"></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span id="gaugeHealthNumber" class="text-3xl font-extrabold text-m3-onSurface font-mono">--%</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-m3-onSurfaceVariant">Effective</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-center text-xs pt-3 border-t border-m3-outlineVariant/30">
+            <div class="p-2.5 rounded-2xl bg-m3-surfaceContainerLow">
+              <span class="text-[10px] uppercase font-bold text-m3-onSurfaceVariant block">Conducted Total</span>
+              <span id="gaugeConductedMetric" class="font-mono font-bold text-m3-onSurface text-sm">--</span>
+            </div>
+            <div class="p-2.5 rounded-2xl bg-m3-surfaceContainerLow">
+              <span class="text-[10px] uppercase font-bold text-m3-onSurfaceVariant block">Attended & Credited</span>
+              <span id="gaugeAttendedMetric" class="font-mono font-bold text-m3-success text-sm">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparative Target Bar Chart -->
+        <div class="zoom-surface bg-m3-surfaceContainerLowest rounded-3xl p-5 border border-m3-outlineVariant/50 shadow-m3-1 flex flex-col justify-between">
+          <div class="flex items-center justify-between border-b border-m3-outlineVariant/20 pb-3">
+            <div>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-m3-onSurface">Benchmark Comparison</h3>
+              <p class="text-[11px] text-m3-onSurfaceVariant">Current standing vs 100% Future Ceiling</p>
+            </div>
+            <span class="p-1.5 rounded-xl bg-m3-surfaceContainerHighest text-m3-onSurfaceVariant">
+              <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            </span>
+          </div>
+
+          <div class="relative h-48 w-full my-2">
+            <canvas id="ceilingBarCanvas"></canvas>
+          </div>
+
+          <div class="p-2.5 rounded-2xl bg-m3-surfaceContainerLow flex items-center justify-between text-[11px] text-m3-onSurfaceVariant">
+            <span class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-m3-error"></span> &lt;75% Danger
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-m3-primary"></span> Current %
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#A5C8D4]"></span> Max Ceiling
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Section 3: Phase 1 Subject-Wise Attendance Calculator & Requirements Table -->
+    <section class="zoom-surface bg-m3-surfaceContainerLowest rounded-3xl border border-m3-outlineVariant/50 shadow-m3-2 overflow-hidden">
+      
+      <!-- Table Header & Controls -->
+      <div class="p-6 border-b border-m3-outlineVariant/30 flex flex-wrap justify-between items-center gap-4 bg-m3-surfaceContainerLow/50">
+        <div>
+          <div class="flex items-center gap-2">
+            <div class="p-2 rounded-xl bg-m3-primaryContainer text-m3-onPrimaryContainer">
+              <i data-lucide="calculator" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base font-bold text-m3-onSurface tracking-tight">Phase 1: Subject Attendance Requirements Engine</h3>
+          </div>
+          <p class="text-xs text-m3-onSurfaceVariant mt-1">
+            Adjust your current subject percentage directly below. The engine calculates classes to attend for safe zone (&gt;75%) and excellence (≥90%).
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-m3-errorContainer text-m3-onErrorContainer">
+            <span class="w-2 h-2 rounded-full bg-m3-error"></span> 75% Cutoff
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-m3-successContainer text-m3-onSuccessContainer">
+            <span class="w-2 h-2 rounded-full bg-m3-success"></span> 90% Target
+          </span>
+        </div>
+      </div>
+
+      <!-- Subject Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm">
+          <thead class="bg-m3-surfaceContainerHighest/50 text-m3-onSurfaceVariant text-[11px] uppercase tracking-wider font-bold border-b border-m3-outlineVariant/30">
+            <tr>
+              <th class="py-3.5 px-5">Subject, Code & Faculty</th>
+              <th class="py-3.5 px-3 text-center">Periods/Wk</th>
+              <th class="py-3.5 px-3 text-center">Remaining</th>
+              <th class="py-3.5 px-4 text-center">Current % Input</th>
+              <th class="py-3.5 px-3 text-center">Attended / Done</th>
+              <th class="py-3.5 px-4 text-center bg-amber-500/10 text-amber-900 border-x border-amber-500/20">Req for &gt;75%</th>
+              <th class="py-3.5 px-4 text-center bg-m3-primaryContainer/30 text-m3-onPrimaryContainer">Req for ≥90%</th>
+              <th class="py-3.5 px-3 text-center">Max Possible %</th>
+              <th class="py-3.5 px-4 text-center">Eligibility Status</th>
+            </tr>
+          </thead>
+          <tbody id="subjectRowsTbody" class="divide-y divide-m3-outlineVariant/20">
+            <!-- Dynamic rows injected here -->
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- Section 4: Timetable Weekly Matrix Visualizer -->
+    <section class="zoom-surface bg-m3-surfaceContainerLowest rounded-3xl p-6 border border-m3-outlineVariant/50 shadow-m3-1">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-m3-outlineVariant/30 pb-4 mb-4">
+        <div>
+          <h4 class="text-sm font-bold text-m3-onSurface flex items-center gap-2">
+            <i data-lucide="clock" class="w-4 h-4 text-m3-primary"></i>
+            Weekly Period Schedule Matrix: <span id="timetableMatrixHeading" class="text-m3-primary font-mono ml-1 font-bold">Section</span>
+          </h4>
+          <p class="text-xs text-m3-onSurfaceVariant">Extracted from verified SEEE department allocation records[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-mono px-3 py-1 rounded-full bg-m3-surfaceContainerLow text-m3-secondary font-semibold">
+            Periods 1-9 (09:00 - 17:05)[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+          </span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-center text-xs border border-m3-outlineVariant/40 rounded-2xl overflow-hidden">
+          <thead class="bg-m3-surfaceContainerHighest text-m3-onSurfaceVariant font-bold uppercase text-[11px]">
+            <tr>
+              <th class="py-3 px-3 border-r border-m3-outlineVariant/40">Day</th>
+              <th class="py-3 px-2">P1 (09:00)</th>
+              <th class="py-3 px-2">P2 (09:50)</th>
+              <th class="py-3 px-2">P3 (10:50)</th>
+              <th class="py-3 px-2">P4 (11:40)</th>
+              <th class="py-3 px-2 bg-m3-surfaceContainerLowest text-m3-outline font-semibold">Lunch</th>
+              <th class="py-3 px-2">P6 (13:30)</th>
+              <th class="py-3 px-2">P7 (14:25)</th>
+              <th class="py-3 px-2">P8 (15:20)</th>
+              <th class="py-3 px-2">P9 (16:15)</th>
+            </tr>
+          </thead>
+          <tbody id="timetableMatrixTbody" class="divide-y divide-m3-outlineVariant/30">
+            <!-- Timetable period cells populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Section 5: Phase 2 Intelligent AI Floating Assistant -->
+  <div class="fixed bottom-6 right-6 z-50">
+    <!-- Floating Action Button (M3 FAB) -->
+    <button id="floatingAdvisorFab" class="m3-ripple group bg-m3-primary hover:bg-m3-primary/95 text-white rounded-3xl p-4 shadow-m3-3 hover:shadow-m3-4 flex items-center gap-3 transition-all duration-300 transform hover:scale-105 active:scale-95">
+      <div class="relative flex items-center justify-center">
+        <i data-lucide="bot" class="w-6 h-6 transition-transform group-hover:rotate-12"></i>
+        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-400"></span>
+        </span>
+      </div>
+      <span class="font-bold text-xs sm:text-sm tracking-wide hidden sm:inline pr-1">Attendance Advisor AI</span>
+    </button>
+
+    <!-- AI Chat Dialog Sheet -->
+    <div id="aiChatSheet" class="hidden absolute bottom-16 right-0 w-[92vw] sm:w-[440px] h-[580px] bg-m3-surfaceContainerLowest rounded-3xl shadow-m3-5 border border-m3-outlineVariant/50 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-200">
+      
+      <!-- App Bar -->
+      <div class="bg-gradient-to-r from-m3-primary via-indigo-700 to-purple-800 text-white p-4 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-amber-300 shadow-inner">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm tracking-tight">Attendance Advisor AI</h4>
+            <span class="text-[10px] text-purple-200 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Active Timetable Context Synced[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            </span>
+          </div>
+        </div>
+        <button id="aiChatCloseBtn" class="p-1.5 text-white/80 hover:text-white rounded-full hover:bg-white/10 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Action Question Chips -->
+      <div class="bg-m3-surfaceContainerLow p-2.5 border-b border-m3-outlineVariant/30 flex gap-1.5 overflow-x-auto text-[11px]">
+        <button class="chat-quick-chip bg-white border border-m3-outlineVariant/60 hover:border-m3-primary text-m3-onSurface px-3 py-1 rounded-full whitespace-nowrap shadow-xs transition" data-ask="If I take a 3-day sick leave starting tomorrow, will my attendance drop below 75%?">
+          🤒 3-Day Sick Leave Impact?
+        </button>
+        <button class="chat-quick-chip bg-white border border-m3-outlineVariant/60 hover:border-m3-primary text-m3-onSurface px-3 py-1 rounded-full whitespace-nowrap shadow-xs transition" data-ask="How many classes can I safely bunk across all subjects?">
+          🏖️ Bunk Allowance?
+        </button>
+        <button class="chat-quick-chip bg-white border border-m3-outlineVariant/60 hover:border-m3-primary text-m3-onSurface px-3 py-1 rounded-full whitespace-nowrap shadow-xs transition" data-ask="Can I reach 90% attendance in all my subjects before November?">
+          🎯 Can I hit 90%?
+        </button>
+      </div>
+
+      <!-- Conversation Stream -->
+      <div id="aiChatConversation" class="flex-1 p-4 overflow-y-auto space-y-3.5 bg-m3-surfaceContainerLow/30 text-xs sm:text-sm">
+        <div class="flex items-start gap-2.5">
+          <div class="w-8 h-8 rounded-2xl bg-m3-primary text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-sm">
+            AI
+          </div>
+          <div class="bg-white border border-m3-outlineVariant/40 text-m3-onSurface p-3.5 rounded-2xl rounded-tl-sm shadow-xs leading-relaxed max-w-[85%]">
+            Welcome! I am your <strong>Material 3 Attendance Advisor</strong>. I monitor your remaining periods, day-to-day timetable slots, and condonation margins[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
+            <br/><br/>
+            Try asking questions like:
+            <ul class="list-disc ml-4 mt-1.5 space-y-1 text-m3-onSurfaceVariant text-[11px]">
+              <li><em>"If I take a 3-day sick leave starting tomorrow, will my Chemistry/DSA drop below 75%?"</em></li>
+              <li><em>"How many classes can I bunk without detention?"</em></li>
+              <li><em>"What happens if I get 2 days of OD granted?"</em></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <form id="aiChatForm" class="p-3 bg-white border-t border-m3-outlineVariant/40 flex items-center gap-2">
+        <input type="text" id="aiChatInput" placeholder="Ask about bunking, leave consequences, or 90% goals..." class="flex-1 bg-m3-surfaceContainerHighest/60 border border-m3-outlineVariant/40 rounded-2xl px-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-m3-primary font-medium text-m3-onSurface transition" />
+        <button type="submit" class="m3-ripple bg-m3-primary hover:bg-m3-primary/95 text-white p-2.5 rounded-2xl shadow-m3-1 flex items-center justify-center transition">
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- CORE JAVASCRIPT ENGINE (TIMETABLES + CALENDAR + M3 DYNAMICS) -->
+  <script>
+    // 1. DATASET OF 10 SECTION TIMETABLES
+    const SEEE_TIMETABLE_REPOSITORY = {
+      "IV-ECE-A": {
+        name: "IV Year ECE - Section A (VII Sem)",
+        venue: "IST 225",
+        slots: {
+          "A": { code: "21GNH401T", name: "Behavioural Psychology", faculty: "Dr. A. Anand", periodsPerWeek: 3 },
+          "B": { code: "21ECC401T", name: "Wireless Comm. & Antenna Systems", faculty: "Dr. K. Vigneshwaran", periodsPerWeek: 3 },
+          "C": { code: "21ECC402P", name: "Comp Comm & Network Security", faculty: "Dr. S. Jeevanantham", periodsPerWeek: 3 },
+          "D": { code: "21ECE461T", name: "Semiconductor Memory Design", faculty: "Dr. H. SriBhuvaneshwari", periodsPerWeek: 3 },
+          "E": { code: "21ECE463T", name: "Scripting Lang. for EDA", faculty: "Dr. Sreenivasa Rao Ijada", periodsPerWeek: 3 },
+          "F": { code: "21CSO355T", name: "Machine Learning for All", faculty: "Dr. N. Prasanna Venkatesh", periodsPerWeek: 3 },
+          "LAB": { code: "21ECC402P-LAB", name: "CCN Security Lab", faculty: "Mrs. T. Swetha", periodsPerWeek: 2 }
+        },
+        grid: {
+          "Monday": ["C", "D", "A", "D", "", "", "", "", ""],
+          "Tuesday": ["C", "LAB", "B", "F", "", "", "", "", ""],
+          "Wednesday": ["B", "LAB", "E", "F", "", "", "", "", ""],
+          "Thursday": ["F", "A", "E", "B", "", "", "", "", ""],
+          "Friday": ["C", "A", "D", "E", "", "", "", "", ""]
+        }
+      },
+      "IV-ECE-B": {
+        name: "IV Year ECE - Section B (VII Sem)",
+        venue: "IST 227",
+        slots: {
+          "A": { code: "21GNH401T", name: "Behavioural Psychology", faculty: "Dr. A. Anand", periodsPerWeek: 3 },
+          "B": { code: "21ECC401T", name: "Wireless Comm. & Antenna Systems", faculty: "Dr. K. Vigneshwaran", periodsPerWeek: 3 },
+          "C": { code: "21ECC402P", name: "CCN Security (T)", faculty: "Dr. R. Rajasekar", periodsPerWeek: 3 },
+          "D": { code: "21ECE461T", name: "Semiconductor Memory Design", faculty: "Dr. H. SriBhuvaneshwari", periodsPerWeek: 3 },
+          "E": { code: "21ECE463T", name: "Scripting Lang. for EDA", faculty: "Dr. Sreenivasa Rao Ijada", periodsPerWeek: 3 },
+          "F": { code: "21CSO355T", name: "Machine Learning for All", faculty: "Dr. N. Prasanna Venkatesh", periodsPerWeek: 3 },
+          "LAB": { code: "21ECC402P-LAB", name: "CCN Security Lab", faculty: "Ms. T. Swetha", periodsPerWeek: 2 }
+        },
+        grid: {
+          "Monday": ["C", "A", "E", "F", "", "", "", "", ""],
+          "Tuesday": ["C", "E", "F", "B", "", "", "", "", ""],
+          "Wednesday": ["C", "D", "A", "B", "", "", "", "", ""],
+          "Thursday": ["D", "B", "LAB", "A", "", "", "", "", ""],
+          "Friday": ["E", "D", "F", "", "", "", "", "", ""]
+        }
+      },
+      "III-ECE-A": {
+        name: "III Year ECE - Section A (V Sem)",
+        venue: "IST 518/FN",
+        slots: {
+          "A": { code: "21MAB302T", name: "Discrete Mathematics", faculty: "New Faculty 3", periodsPerWeek: 4 },
+          "B": { code: "21ECC301P", name: "Microprocessor & Microcontrollers", faculty: "Dr. M. Manikandan", periodsPerWeek: 4 },
+          "C": { code: "21ECC303T", name: "VLSI Design & Technology", faculty: "Dr. M. Jothi", periodsPerWeek: 3 },
+          "D": { code: "21ECE468T", name: "System and Network on Chip", faculty: "Dr. V. Manikandan", periodsPerWeek: 3 },
+          "E": { code: "21CSO355T", name: "Machine Learning for All", faculty: "Dr. J. Jencia", periodsPerWeek: 3 },
+          "F": { code: "21GNP301L", name: "Community Connect", faculty: "Dr. V. Rajesh / Dr. V. Bharathi", periodsPerWeek: 2 },
+          "G": { code: "21PDM301L", name: "Analytical & Logical Thinking", faculty: "CDC Trainer", periodsPerWeek: 2 },
+          "H": { code: "21LEM301T", name: "Indian Art Form", faculty: "Dr. K. Vigneshwaran", periodsPerWeek: 1 },
+          "LAB": { code: "21ECC311L", name: "VLSI / Microprocessor Lab", faculty: "Dr. M. Jothi / Dr. P. Murugapandiyan", periodsPerWeek: 4 }
+        },
+        grid: {
+          "Monday": ["E", "B", "B", "A", "", "G", "G", "LAB", "LAB"],
+          "Tuesday": ["H", "D", "B", "B", "", "", "", "", ""],
+          "Wednesday": ["C", "A", "D", "F", "", "", "", "", ""],
+          "Thursday": ["A", "E", "C", "F", "", "", "", "", ""],
+          "Friday": ["D", "A", "E", "C", "", "", "", "", ""]
+        }
+      },
+      "III-ECE-B": {
+        name: "III Year ECE - Section B (V Sem)",
+        venue: "IST 518/AN",
+        slots: {
+          "A": { code: "21MAB302T", name: "Discrete Mathematics", faculty: "Dr. M. Thanga Rejini", periodsPerWeek: 4 },
+          "B": { code: "21ECC301P", name: "Microprocessor & Interfacing", faculty: "Mrs. B. Abirami", periodsPerWeek: 4 },
+          "C": { code: "21ECC303T", name: "VLSI Design & Technology", faculty: "Dr. R. Vinoth Raj", periodsPerWeek: 3 },
+          "D": { code: "21ECE468T", name: "System & Network on Chip", faculty: "Dr. V. Manikandan", periodsPerWeek: 3 },
+          "E": { code: "21CSO355T", name: "Machine Learning for All", faculty: "Dr. J. Jencia", periodsPerWeek: 3 },
+          "F": { code: "21GNP301L", name: "Community Connect", faculty: "Dr. H. Sudharsan / Ms. T. Swetha", periodsPerWeek: 2 },
+          "G": { code: "21PDM301L", name: "Analytical & Logical Thinking", faculty: "CDC-625", periodsPerWeek: 2 },
+          "H": { code: "21LEM301T", name: "Indian Art Form", faculty: "Dr. A. Anand", periodsPerWeek: 1 },
+          "LAB": { code: "21ECC311L", name: "VLSI / MPMC Lab", faculty: "Dr. Sreenivasa Ijada / Dr. B. DeviSri", periodsPerWeek: 4 }
+        },
+        grid: {
+          "Monday": ["LAB", "LAB", "LAB", "LAB", "", "E", "B", "A", "D"],
+          "Tuesday": ["G", "G", "", "", "", "F", "B", "D", "C"],
+          "Wednesday": ["G", "", "", "", "", "B", "B", "A", "H"],
+          "Thursday": ["LAB", "LAB", "LAB", "LAB", "", "A", "C", "E", "F"],
+          "Friday": ["", "", "", "", "", "C", "A", "E", "D"]
+        }
+      },
+      "III-ECE-DS": {
+        name: "III Year ECE Data Science (V Sem)",
+        venue: "IST 519/FN",
+        slots: {
+          "A": { code: "21MAB302T", name: "Discrete Mathematics", faculty: "New Faculty 2", periodsPerWeek: 4 },
+          "B": { code: "21ECC301P", name: "Microprocessor & Interfacing", faculty: "Mrs. B. Abirami", periodsPerWeek: 4 },
+          "C": { code: "21ECC303T", name: "VLSI Design & Technology", faculty: "Dr. R. Vinoth Raj", periodsPerWeek: 3 },
+          "D": { code: "21CSO355T", name: "Machine Learning for All", faculty: "Dr. Chitra Devi", periodsPerWeek: 3 },
+          "E": { code: "21ECE371T", name: "Database Design & Management", faculty: "Dr. S. Saraswathi", periodsPerWeek: 3 },
+          "F": { code: "21GNP301L", name: "Community Connect", faculty: "Dr. S. Jeevanantham", periodsPerWeek: 2 },
+          "G": { code: "21PDM301L", name: "Analytical & Logical Thinking", faculty: "CDC-625", periodsPerWeek: 2 },
+          "H": { code: "21LEM301T", name: "Indian Art Form", faculty: "Dr. Prabin Kumar Bera", periodsPerWeek: 1 },
+          "LAB": { code: "21ECC311L", name: "VLSI / MPMC Lab", faculty: "Dr. R. Vinothraj / Dr. Sri Bhuvaneshwari", periodsPerWeek: 4 }
+        },
+        grid: {
+          "Monday": ["E", "B", "C", "A", "", "LAB", "LAB", "G", "G"],
+          "Tuesday": ["C", "B", "D", "F", "", "", "", "", ""],
+          "Wednesday": ["H", "B", "A", "C", "", "", "", "", ""],
+          "Thursday": ["A", "D", "E", "F", "", "", "", "", ""],
+          "Friday": ["D", "A", "E", "B", "", "G", "G", "LAB", "LAB"]
+        }
+      },
+      "III-BME": {
+        name: "III Year Biomedical Engineering (V Sem)",
+        venue: "IST 211/AN",
+        slots: {
+          "A": { code: "21MAB301T", name: "Probability & Statistics", faculty: "Dr. K. M. Karuppusamy", periodsPerWeek: 4 },
+          "B": { code: "21BMC302J", name: "Microcontrollers in Medicine", faculty: "Dr. K. Vigneshwaran", periodsPerWeek: 4 },
+          "C": { code: "21BMC301J", name: "Biomedical Signal Processing", faculty: "Dr. V. N. Senthilkumaran", periodsPerWeek: 4 },
+          "D": { code: "21BME266T", name: "Biometrics", faculty: "Dr. G. Gifta", periodsPerWeek: 3 },
+          "E": { code: "21ECO103T", name: "Modern Wireless Communication", faculty: "Dr. Vaishnavi", periodsPerWeek: 3 },
+          "F": { code: "21BMC303T", name: "Principles of Medical Imaging", faculty: "Dr. N. Prasanna Venkatesh", periodsPerWeek: 3 },
+          "G": { code: "21PDM301L", name: "Analytical & Logical Thinking", faculty: "CDC-625", periodsPerWeek: 2 },
+          "H": { code: "21LEM301T", name: "Indian Art Form", faculty: "Dr. G. Gifta", periodsPerWeek: 1 },
+          "LAB": { code: "BIO-DSP-LAB", name: "Bio-DSP / MPMC Lab", faculty: "Lab Faculty", periodsPerWeek: 4 }
+        },
+        grid: {
+          "Monday": ["G", "G", "LAB", "LAB", "", "E", "B", "F", "H"],
+          "Tuesday": ["LAB", "LAB", "G", "", "", "C", "D", "A", "B"],
+          "Wednesday": ["", "", "", "", "", "C", "A", "F", "D"],
+          "Thursday": ["LAB", "LAB", "LAB", "", "", "A", "C", "E", "B"],
+          "Friday": ["LAB", "LAB", "", "", "", "F", "A", "D", "E"]
+        }
+      },
+      "II-ECE-DS-A": {
+        name: "II Year ECE Data Science - Section A (III Sem)",
+        venue: "IST 416/FN",
+        slots: {
+          "A": { code: "21MAB201T", name: "Transforms & Boundary Value Prob.", faculty: "Dr. C. Arun Kumar", periodsPerWeek: 4 },
+          "B": { code: "21ECC201T", name: "Solid State Devices", faculty: "Dr. Jeevanantham S", periodsPerWeek: 3 },
+          "C": { code: "21CSS201T", name: "Comp Organization & Arch.", faculty: "Dr. P. Murugapandiyan", periodsPerWeek: 4 },
+          "D": { code: "21ECC203T", name: "Digital Logic Design", faculty: "Dr. S. Krishnakumar", periodsPerWeek: 3 },
+          "E": { code: "21ECC205T", name: "Electromagnetic Theory", faculty: "Dr. V. Bharathi", periodsPerWeek: 3 },
+          "F": { code: "21LEM201T", name: "Professional Ethics", faculty: "Dr. Jothi M", periodsPerWeek: 1 },
+          "G": { code: "21LEM202T", name: "Universal Human Values-II", faculty: "Mrs. N. Suganthi", periodsPerWeek: 2 },
+          "H": { code: "21PDM201L", name: "Verbal Reasoning", faculty: "CDC Trainer", periodsPerWeek: 2 },
+          "LAB": { code: "21ECC211L", name: "Devices & Digital IC Lab", faculty: "Dr. S. Jeevanantham / Dr. Bharathi", periodsPerWeek: 4 }
+        },
+        grid: {
+          "Monday": ["E", "A", "A", "A", "", "G", "G", "LAB", "LAB"],
+          "Tuesday": ["C", "A", "E", "D", "", "G", "G", "H", "H"],
+          "Wednesday": ["A", "B", "C", "D", "", "H", "H", "", ""],
+          "Thursday": ["B", "C", "A", "F", "", "LAB", "LAB", "", ""],
+          "Friday": ["D", "B", "E", "C", "", "", "", "", ""]
+        }
+      },
+      "II-ECE-DS-B": {
+        name: "II Year ECE Data Science - Section B (III Sem)",
+        venue: "IST 411/AN",
+        slots: {
+          "A": { code: "21MAB201T", name: "Transforms & Boundary Value Prob.", faculty: "New Faculty 3", periodsPerWeek: 4 },
+          "B": { code: "21ECC201T", name: "Solid State Devices", faculty: "Dr. Jeevanantham S", periodsPerWeek: 3 },
+          "C": { code: "21CSS201T", name: "Comp Organization & Arch.", faculty: "Dr. P. Murugapandiyan", periodsPerWeek: 4 },
+          "D": { code: "21ECC203T", name: "Digital Logic Design", faculty: "Dr. S. Krishnakumar", periodsPerWeek: 3 },
+          "E": { code: "21ECC205T", name: "Electromagnetic Theory", faculty: "Dr. V. Bharathi", periodsPerWeek: 3 },
+          "F": { code: "21LEM201T", name: "Professional Ethics", faculty: "Dr. K. Vigneshwaran", periodsPerWeek: 1 },
+          "G": { code: "21LEM202T", name: "Universal Human Values-II", faculty: "Mrs. D. Lavanya", periodsPerWeek: 2 },
+          "H": { code: "21PDM201L", name: "Verbal Reasoning", faculty: "CDC Trainer", periodsPerWeek: 2 },
+          "LAB": { code: "21ECC211L", name: "Devices & Digital IC Lab", faculty: "Dr. S. Krishnakumar", periodsPerWeek: 4 }
+        },
+        grid: {
+          "Monday": ["LAB", "LAB", "LAB", "", "", "D", "B", "C", "A"],
+          "Tuesday": ["LAB", "LAB", "LAB", "", "", "C", "D", "E", "A"],
+          "Wednesday": ["G", "G", "", "", "", "E", "E", "A", "D"],
+          "Thursday": ["G", "G", "H", "H", "", "A", "C", "B", "E"],
+          "Friday": ["H", "H", "", "", "", "F", "A", "B", "C"]
+        }
+      },
+      "II-BME": {
+        name: "II Year Biomedical Engineering (III Sem)",
+        venue: "IST 602/FN",
+        slots: {
+          "A": { code: "21MAB201T", name: "Transforms & Boundary Values", faculty: "Dr. A. Manickam", periodsPerWeek: 4 },
+          "B": { code: "21BMC202T", name: "Biomedical Signals & Systems", faculty: "Dr. V. N. Senthil Kumaran", periodsPerWeek: 3 },
+          "C": { code: "21BMC203J", name: "Electric & Electronic Circuits", faculty: "Dr. Prabin Kumar Bera", periodsPerWeek: 4 },
+          "D": { code: "21BMC204J", name: "Digital Logic for Med. Systems", faculty: "Dr. G. Gifta", periodsPerWeek: 3 },
+          "E": { code: "21PYS202T", name: "Medical Physics", faculty: "Dr. D. Rajeswari", periodsPerWeek: 3 },
+          "F": { code: "21LEM201T", name: "Professional Ethics", faculty: "Dr. H. SriBhuvaneshwari", periodsPerWeek: 1 },
+          "G": { code: "21LEM202T", name: "Universal Human Values-II", faculty: "Mrs. N. Suganthi", periodsPerWeek: 2 },
+          "H": { code: "21PDM201L", name: "Verbal Reasoning", faculty: "CDC Trainer", periodsPerWeek: 2 },
+          "LAB": { code: "DLMS/EEC-LAB", name: "Circuits & Logic Lab", faculty: "Lab Faculty", periodsPerWeek: 4 }
+        },
+        grid: {
+          "Monday": ["E", "C", "B", "A", "", "LAB", "LAB", "", ""],
+          "Tuesday": ["C", "E", "A", "A", "", "H", "H", "", ""],
+          "Wednesday": ["B", "D", "A", "D", "", "H", "H", "G", "G"],
+          "Thursday": ["A", "E", "B", "D", "", "", "", "LAB", "LAB"],
+          "Friday": ["F", "A", "C", "D", "", "", "", "G", "G"]
+        }
+      },
+      "I-ECE-A": {
+        name: "I Year ECE - Section A (I Sem)",
+        venue: "IST 602",
+        slots: {
+          "A": { code: "21MAB102T", name: "Calculus & Complex Analysis", faculty: "Dr. R. Ragul", periodsPerWeek: 4 },
+          "B": { code: "21CYB101J", name: "Chemistry", faculty: "Dr. P. Pachamuthu", periodsPerWeek: 4 },
+          "C": { code: "21BTB102J", name: "Electronic System & PCB Design", faculty: "Dr. U. Shajith Ali", periodsPerWeek: 2 },
+          "D": { code: "21CSS101J", name: "Programming for Problem Solving", faculty: "Dr. A. Rama Prasath", periodsPerWeek: 3 },
+          "E": { code: "21GNH101J", name: "Philosophy of Engineering", faculty: "Dr. R. Aarthi", periodsPerWeek: 2 },
+          "F": { code: "21BTB103T", name: "Biology", faculty: "Dr. M. Jaya Priya", periodsPerWeek: 2 },
+          "GER": { code: "21LEH104T", name: "German Language", faculty: "Mr. Selva", periodsPerWeek: 3 },
+          "LAB": { code: "21MES101L", name: "Workshop / Che / PPS Lab", faculty: "Lab Coordinators", periodsPerWeek: 6 }
+        },
+        grid: {
+          "Monday": ["E", "E", "B", "A", "", "LAB", "LAB", "F", "F"],
+          "Tuesday": ["C", "B", "A", "D", "", "LAB", "LAB", "LAB", "LAB"],
+          "Wednesday": ["B", "E", "D", "", "", "LAB", "LAB", "LAB", "LAB"],
+          "Thursday": ["", "GER", "A", "", "", "", "", "LAB", "LAB"],
+          "Friday": ["D", "A", "C", "B", "", "F", "GER", "", ""]
+        }
+      }
+    };
+
+    // Global Reactive States
+    let activeSectionKey = "IV-ECE-A";
+    let userSubjectPercentages = {};
+    let activeAnalyticsModel = {};
+    let healthGaugeChartInstance = null;
+    let ceilingBarChartInstance = null;
+
+    // 2. LIFECYCLE & DOM BOOTSTRAP
+    document.addEventListener("DOMContentLoaded", () => {
+      initCustomCursor();
+      populateSectionDropdown();
+      initDateInputs();
+      seedInitialPercentages();
+      bindInteractiveEvents();
+      recalculateAcademicHealth();
+      lucide.createIcons();
+    });
+
+    // Custom Interactive Magnet Cursor Implementation
+    function initCustomCursor() {
+      const dot = document.getElementById("custom-cursor-dot");
+      const ring = document.getElementById("custom-cursor-ring");
+
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let ringX = mouseX;
+      let ringY = mouseY;
+
+      window.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      });
+
+      // Smooth trailing ring physics
+      function animateRing() {
+        ringX += (mouseX - ringX) * 0.18;
+        ringY += (mouseY - ringY) * 0.18;
+        ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+        requestAnimationFrame(animateRing);
+      }
+      animateRing();
+
+      // Zooming/Magnetic trigger on hoverables
+      const attachHoverListeners = () => {
+        document.querySelectorAll("button, select, input, a, tr, .zoom-surface").forEach(elem => {
+          elem.addEventListener("mouseenter", () => document.body.classList.add("cursor-active"));
+          elem.addEventListener("mouseleave", () => document.body.classList.remove("cursor-active"));
+        });
+      };
+      attachHoverListeners();
+      window.refreshCursorTargets = attachHoverListeners;
+    }
+
+    function populateSectionDropdown() {
+      const sel = document.getElementById("sectionSelector");
+      sel.innerHTML = "";
+      Object.keys(SEEE_TIMETABLE_REPOSITORY).forEach(key => {
+        const item = SEEE_TIMETABLE_REPOSITORY[key];
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = `${key} — ${item.name} (${item.venue})`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function initDateInputs() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const todayIso = `${yyyy}-${mm}-${dd}`;
+
+      const sysInput = document.getElementById("systemDateInput");
+      sysInput.value = todayIso;
+      document.getElementById("headerLiveDate").textContent = todayIso;
+
+      // Default target semester closure: late November
+      document.getElementById("targetDateInput").value = `${yyyy}-11-27`;
+    }
+
+    function seedInitialPercentages() {
+      const section = SEEE_TIMETABLE_REPOSITORY[activeSectionKey];
+      userSubjectPercentages = {};
+      const presets = [85, 71, 92, 64, 88, 79, 94];
+      let idx = 0;
+      Object.keys(section.slots).forEach(slotKey => {
+        userSubjectPercentages[slotKey] = presets[idx % presets.length];
+        idx++;
+      });
+    }
+
+    function bindInteractiveEvents() {
+      document.getElementById("sectionSelector").addEventListener("change", (e) => {
+        activeSectionKey = e.target.value;
+        seedInitialPercentages();
+        recalculateAcademicHealth();
+      });
+
+      document.getElementById("btnRecalculateAll").addEventListener("click", () => {
+        recalculateAcademicHealth();
+      });
+
+      document.getElementById("systemDateInput").addEventListener("change", recalculateAcademicHealth);
+      document.getElementById("targetDateInput").addEventListener("change", recalculateAcademicHealth);
+      document.getElementById("inputSimulatorOd").addEventListener("input", recalculateAcademicHealth);
+      document.getElementById("inputSimulatorMl").addEventListener("input", recalculateAcademicHealth);
+
+      // AI Chat Controls
+      const chatSheet = document.getElementById("aiChatSheet");
+      document.getElementById("floatingAdvisorFab").addEventListener("click", () => {
+        chatSheet.classList.toggle("hidden");
+      });
+      document.getElementById("navAdvisorBtn").addEventListener("click", () => {
+        chatSheet.classList.remove("hidden");
+        document.getElementById("aiChatInput").focus();
+      });
+      document.getElementById("aiChatCloseBtn").addEventListener("click", () => {
+        chatSheet.classList.add("hidden");
+      });
+
+      document.querySelectorAll(".chat-quick-chip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.getElementById("aiChatInput").value = btn.getAttribute("data-ask");
+          document.getElementById("aiChatForm").dispatchEvent(new Event("submit"));
+        });
+      });
+
+      document.getElementById("aiChatForm").addEventListener("submit", handleAdvisorMessageSubmit);
+    }
+
+    // 3. HORIZON CALENDAR ENGINE
+    function countDayOccurrences(startDateStr, endDateStr) {
+      const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      let curr = new Date(startDateStr);
+      const end = new Date(endDateStr);
+
+      curr.setDate(curr.getDate() + 1); // Future dates start tomorrow
+
+      while (curr <= end) {
+        const day = curr.getDay();
+        if (day >= 1 && day <= 5) {
+          counts[day] = (counts[day] || 0) + 1;
+        }
+        curr.setDate(curr.getDate() + 1);
+      }
+      return counts;
+    }
+
+    function evaluateRemainingPeriods(sectionKey, startDate, endDate) {
+      const dayCounts = countDayOccurrences(startDate, endDate);
+      const section = SEEE_TIMETABLE_REPOSITORY[sectionKey];
+      const dayNameMap = { 1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday" };
+
+      const remainingPeriodsBySlot = {};
+      Object.keys(section.slots).forEach(s => remainingPeriodsBySlot[s] = 0);
+
+      for (let dayIndex = 1; dayIndex <= 5; dayIndex++) {
+        const dayName = dayNameMap[dayIndex];
+        const occurrences = dayCounts[dayIndex] || 0;
+        const periods = section.grid[dayName] || [];
+
+        periods.forEach(slot => {
+          if (slot && remainingPeriodsBySlot.hasOwnProperty(slot)) {
+            remainingPeriodsBySlot[slot] += occurrences;
+          }
+        });
+      }
+
+      const totalHorizonWorkingDays = Object.values(dayCounts).reduce((a, b) => a + b, 0);
+      return { remainingPeriodsBySlot, totalHorizonWorkingDays };
+    }
+
+    // 4. CORE MATHEMATICAL MODEL & WARNING ENGINE
+    function recalculateAcademicHealth() {
+      const section = SEEE_TIMETABLE_REPOSITORY[activeSectionKey];
+      const startDate = document.getElementById("systemDateInput").value;
+      const targetDate = document.getElementById("targetDateInput").value;
+      const pastWeeks = parseFloat(document.getElementById("pastWeeksConducted").value) || 9;
+      const odDays = parseInt(document.getElementById("inputSimulatorOd").value) || 0;
+      const mlDays = parseInt(document.getElementById("inputSimulatorMl").value) || 0;
+      const totalExemptDays = odDays + mlDays;
+
+      document.getElementById("venuePillBadge").textContent = `Venue: ${section.venue}[cite: 1, 2, 3, 4, 5, 6, 7, 8, 10]`;
+      document.getElementById("sectionDetailSubtext").textContent = `${Object.keys(section.slots).length} registered subjects mapped to SEEE timetable matrix[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].`;
+      document.getElementById("timetableMatrixHeading").textContent = `${activeSectionKey} (${section.venue})[cite: 1, 2, 3, 4, 5, 6, 7, 8, 10]`;
+
+      const { remainingPeriodsBySlot, totalHorizonWorkingDays } = evaluateRemainingPeriods(activeSectionKey, startDate, targetDate);
+
+      const tbody = document.getElementById("subjectRowsTbody");
+      tbody.innerHTML = "";
+
+      let aggConducted = 0;
+      let aggAttended = 0;
+      let aggRemaining = 0;
+      let aggReq75 = 0;
+      let aggReq90 = 0;
+      let aggMaxPossibleAttended = 0;
+      let irreversibleAlerts = [];
+      const evaluatedRows = [];
+
+      Object.keys(section.slots).forEach(slotKey => {
+        const slot = section.slots[slotKey];
+        const userPct = parseFloat(userSubjectPercentages[slotKey] !== undefined ? userSubjectPercentages[slotKey] : 75);
+
+        // Historical baseline
+        const conductedSoFar = Math.max(1, Math.round(slot.periodsPerWeek * pastWeeks));
+        let attendedRaw = Math.round((userPct / 100) * conductedSoFar);
+        if (attendedRaw > conductedSoFar) attendedRaw = conductedSoFar;
+
+        // OD & Medical Leave credit simulation
+        const creditedPeriods = Math.min(
+          conductedSoFar - attendedRaw,
+          Math.round(totalExemptDays * (slot.periodsPerWeek / 5))
+        );
+        const effectiveAttended = Math.min(conductedSoFar, attendedRaw + creditedPeriods);
+        const currentEffectivePct = Math.round((effectiveAttended / conductedSoFar) * 1000) / 10;
+
+        const rem = remainingPeriodsBySlot[slotKey] !== undefined ? remainingPeriodsBySlot[slotKey] : (slot.periodsPerWeek * 8);
+        const totalProjected = conductedSoFar + rem;
+
+        // Required classes calculation:
+        // (Attended + X) / TotalProjected >= Target  -->  X = Ceil(Target * TotalProjected - Attended)
+        const target75Needed = Math.ceil(0.75 * totalProjected);
+        let req75 = Math.max(0, target75Needed - effectiveAttended);
+
+        const target90Needed = Math.ceil(0.90 * totalProjected);
+        let req90 = Math.max(0, target90Needed - effectiveAttended);
+
+        // Ceiling with 100% future attendance
+        const maxCeilingPct = Math.round(((effectiveAttended + rem) / totalProjected) * 1000) / 10;
+        const isDetained = maxCeilingPct < 75.0;
+
+        if (isDetained) {
+          irreversibleAlerts.push({
+            name: slot.name,
+            code: slot.code,
+            slotKey,
+            maxPct: maxCeilingPct,
+            shortfall: (target75Needed - (effectiveAttended + rem))
+          });
+        }
+
+        const maxMissable = Math.max(0, rem - req75);
+
+        evaluatedRows.push({
+          slotKey,
+          slot,
+          userPct,
+          currentEffectivePct,
+          conductedSoFar,
+          effectiveAttended,
+          creditedPeriods,
+          rem,
+          req75,
+          req90,
+          maxCeilingPct,
+          isDetained,
+          maxMissable
+        });
+
+        aggConducted += conductedSoFar;
+        aggAttended += effectiveAttended;
+        aggRemaining += rem;
+        aggReq75 += req75;
+        aggReq90 += req90;
+        aggMaxPossibleAttended += (effectiveAttended + rem);
+      });
+
+      // Save to global state model
+      activeAnalyticsModel = {
+        sectionKey: activeSectionKey,
+        sectionMeta: section,
+        rows: evaluatedRows,
+        aggConducted,
+        aggAttended,
+        aggRemaining,
+        totalHorizonWorkingDays,
+        overallPercentage: ((aggAttended / aggConducted) * 100).toFixed(1),
+        maxOverallCeiling: ((aggMaxPossibleAttended / (aggConducted + aggRemaining)) * 100).toFixed(1),
+        odDays,
+        mlDays,
+        irreversibleAlerts
+      };
+
+      // Populate Table Body
+      evaluatedRows.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.className = `transition-colors duration-150 hover:bg-m3-surfaceContainerHighest/40 ${item.isDetained ? 'bg-m3-errorContainer/25 border-l-4 border-l-m3-error' : ''}`;
+
+        let statusBadge = "";
+        if (item.isDetained) {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-m3-error text-white animate-pulse">
+            <i data-lucide="alert-octagon" class="w-3.5 h-3.5"></i> DETENTION
+          </span>`;
+        } else if (item.currentEffectivePct < 75) {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+            Danger Zone
+          </span>`;
+        } else if (item.currentEffectivePct >= 90) {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-m3-successContainer text-m3-onSuccessContainer">
+            Excellence
+          </span>`;
+        } else {
+          statusBadge = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-m3-secondaryContainer text-m3-onSecondaryContainer">
+            Eligible
+          </span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3.5 px-5">
+            <div class="font-bold text-m3-onSurface text-sm">${item.slot.name}</div>
+            <div class="text-[11px] text-m3-onSurfaceVariant font-mono flex items-center gap-2 mt-0.5">
+              <span class="bg-m3-surfaceContainerHighest px-1.5 py-0.5 rounded font-bold text-m3-onSurface">${item.slot.code}</span>
+              <span>Slot [${item.slotKey}]</span>
+              <span>•</span>
+              <span class="text-m3-primary font-medium">${item.slot.faculty}</span>
+            </div>
+          </td>
+          <td class="py-3.5 px-3 text-center font-bold text-m3-onSurface">${item.slot.periodsPerWeek}</td>
+          <td class="py-3.5 px-3 text-center font-extrabold font-mono text-m3-primary">${item.rem}</td>
+          <td class="py-3.5 px-4 text-center">
+            <div class="inline-flex items-center gap-1 bg-white border border-m3-outlineVariant/70 rounded-xl px-2 py-1 shadow-xs focus-within:ring-2 focus-within:ring-m3-primary">
+              <input type="number" min="0" max="100" value="${item.userPct}" data-slot="${item.slotKey}" 
+                class="user-pct-input w-12 text-center font-extrabold text-xs text-m3-onSurface focus:outline-none" />
+              <span class="text-xs font-bold text-m3-secondary">%</span>
+            </div>
+            ${item.creditedPeriods > 0 ? `<div class="text-[10px] text-m3-success font-bold mt-1">+${item.creditedPeriods} leave cr.</div>` : ''}
+          </td>
+          <td class="py-3.5 px-3 text-center text-xs font-mono text-m3-onSurfaceVariant">
+            <span class="font-bold text-m3-onSurface text-sm">${item.effectiveAttended}</span> / ${item.conductedSoFar}
+          </td>
+          <td class="py-3.5 px-4 text-center font-black font-mono bg-amber-500/10 text-amber-900 border-x border-amber-500/20">
+            ${item.isDetained 
+              ? `<span class="text-m3-error font-extrabold text-xs uppercase tracking-tight">Impossible</span>` 
+              : `${item.req75} <span class="text-[10px] font-normal text-slate-500">/ ${item.rem}</span>`}
+          </td>
+          <td class="py-3.5 px-4 text-center font-black font-mono bg-m3-primaryContainer/30 text-m3-onPrimaryContainer">
+            ${item.req90 > item.rem 
+              ? `<span class="text-m3-outline font-semibold text-xs">Exceeds Cap</span>` 
+              : `${item.req90} <span class="text-[10px] font-normal text-slate-500">/ ${item.rem}</span>`}
+          </td>
+          <td class="py-3.5 px-3 text-center font-extrabold font-mono ${item.maxCeilingPct < 75 ? 'text-m3-error' : 'text-m3-onSurface'}">
+            ${item.maxCeilingPct}%
+          </td>
+          <td class="py-3.5 px-4 text-center">
+            ${statusBadge}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Bind input events for live table updating
+      document.querySelectorAll(".user-pct-input").forEach(input => {
+        input.addEventListener("change", (e) => {
+          const slot = e.target.getAttribute("data-slot");
+          let val = parseFloat(e.target.value);
+          if (isNaN(val)) val = 0;
+          if (val > 100) val = 100;
+          if (val < 0) val = 0;
+          userSubjectPercentages[slot] = val;
+          recalculateAcademicHealth();
+        });
+      });
+
+      // Update KPI displays
+      document.getElementById("kpiAggregatePct").textContent = `${activeAnalyticsModel.overallPercentage}%`;
+      document.getElementById("kpiRemainingLectures").textContent = aggRemaining;
+      document.getElementById("kpiRemainingDaysSubtitle").textContent = `Across ${totalHorizonWorkingDays} remaining working days`;
+
+      const badge = document.getElementById("kpiEligibilityBadge");
+      const overall = parseFloat(activeAnalyticsModel.overallPercentage);
+      if (overall < 75) {
+        badge.className = "inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-extrabold bg-m3-errorContainer text-m3-onErrorContainer";
+        badge.innerHTML = `<i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Danger Zone (&lt;75%)`;
+      } else if (overall >= 90) {
+        badge.className = "inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-extrabold bg-m3-successContainer text-m3-onSuccessContainer";
+        badge.innerHTML = `<i data-lucide="award" class="w-3.5 h-3.5"></i> Dean's Honor Band (≥90%)`;
+        // Trigger celebratory confetti on reaching 90%+
+        if (typeof confetti === "function") {
+          confetti({ particleCount: 35, spread: 60, origin: { y: 0.85 } });
+        }
+      } else {
+        badge.className = "inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-extrabold bg-m3-secondaryContainer text-m3-onSecondaryContainer";
+        badge.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Eligible & Safe`;
+      }
+
+      document.getElementById("simulatorProjectedPct").textContent = `${activeAnalyticsModel.overallPercentage}% (Ceiling: ${activeAnalyticsModel.maxOverallCeiling}%)`;
+      document.getElementById("gaugeHealthNumber").textContent = `${activeAnalyticsModel.overallPercentage}%`;
+      document.getElementById("gaugeConductedMetric").textContent = aggConducted;
+      document.getElementById("gaugeAttendedMetric").textContent = aggAttended;
+
+      renderCriticalWarningPortal(irreversibleAlerts);
+      renderTimetableMatrix(section);
+      renderM3Charts(evaluatedRows, aggAttended, aggConducted);
+
+      if (window.refreshCursorTargets) window.refreshCursorTargets();
+      lucide.createIcons();
+    }
+
+    // 5. CRITICAL DETENTION LOUD ALERT PORTAL
+    function renderCriticalWarningPortal(alerts) {
+      const portal = document.getElementById("criticalDetentionPortal");
+      if (alerts.length === 0) {
+        portal.innerHTML = "";
+        portal.classList.add("hidden");
+        return;
+      }
+
+      const alertItems = alerts.map(a => `
+        <li class="flex flex-wrap items-center justify-between py-2 border-b border-m3-error/20 last:border-none text-xs sm:text-sm">
+          <span class="font-extrabold text-m3-onErrorContainer">${a.name} [Slot ${a.slotKey}] (${a.code}):</span>
+          <span class="font-mono text-m3-error font-bold">
+            Maximum Recoverable Ceiling: <strong>${a.maxPct}%</strong> (Shortfall: ${a.shortfall} classes short of 75%)
+          </span>
+        </li>
+      `).join("");
+
+      portal.className = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-5 block";
+      portal.innerHTML = `
+        <div class="detention-banner-active bg-m3-errorContainer border-2 border-m3-error rounded-3xl p-6 text-m3-onErrorContainer shadow-m3-3">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-m3-error text-white flex items-center justify-center shrink-0 shadow-m3-2">
+              <i data-lucide="shield-alert" class="w-7 h-7"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="text-base sm:text-lg font-black tracking-tight text-m3-error uppercase flex items-center gap-2">
+                  ⚠️ IRREVERSIBLE DETENTION ALERT: MATHEMATICAL SHORTFALL
+                </h3>
+                <span class="bg-m3-error text-white font-extrabold text-[10px] uppercase px-3 py-1 rounded-full shadow-xs">
+                  Detention Warning Before November
+                </span>
+              </div>
+              <p class="text-xs sm:text-sm text-m3-onErrorContainer mt-1.5 leading-relaxed font-medium">
+                Our dynamic semester calculus confirms that even if you maintain <strong>100% perfect attendance</strong> across every single scheduled period from tomorrow until the semester cut-off, you cannot cross the statutory <strong>75% regulatory requirement</strong> in the following subjects:
+              </p>
+              <ul class="mt-3 bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-m3-error/30 space-y-1">
+                ${alertItems}
+              </ul>
+              <div class="mt-3.5 flex flex-wrap items-center gap-2 text-xs">
+                <span class="font-bold text-m3-error">Department Protocol:</span>
+                <span class="text-m3-onErrorContainer font-medium">Submit formal On-Duty (OD) certificates, university sports orders, or hospital medical clearance documents to the SEEE HOD office immediately to avert semester condonation cancellation[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 6. TIMETABLE SCHEDULE GRID RENDERER
+    function renderTimetableMatrix(section) {
+      const tbody = document.getElementById("timetableMatrixTbody");
+      tbody.innerHTML = "";
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+      days.forEach(day => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-m3-surfaceContainerLow transition-colors duration-150";
+
+        let html = `<td class="py-3 px-3.5 font-bold text-m3-onSurface bg-m3-surfaceContainerLow/60 border-r border-m3-outlineVariant/30">${day}</td>`;
+        const periods = section.grid[day] || [];
+
+        periods.forEach((p, idx) => {
+          if (idx === 4) {
+            html += `<td class="py-3 px-1 text-[10px] font-bold text-m3-outline bg-m3-surfaceContainerHighest/40 uppercase">Lunch</td>`;
+          }
+          if (p === "") {
+            html += `<td class="py-3 px-2 text-m3-outlineVariant/60 font-mono">-</td>`;
+          } else {
+            const isLab = p.toUpperCase().includes("LAB");
+            const pillStyle = isLab 
+              ? "bg-amber-100 text-amber-900 border border-amber-300"
+              : "bg-m3-primaryContainer text-m3-onPrimaryContainer border border-m3-primary/20";
+
+            html += `
+              <td class="py-2 px-1">
+                <span class="inline-block px-2.5 py-1 rounded-xl text-[11px] font-bold font-mono ${pillStyle} shadow-xs truncate max-w-[85px]" title="${section.slots[p] ? section.slots[p].name : p}">
+                  ${p}
+                </span>
+              </td>
+            `;
+          }
+        });
+
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 7. CHART.JS VISUAL DATA TELEMETRY
+    function renderM3Charts(rows, attended, conducted) {
+      // 1. Doughnut Health Gauge
+      const gaugeCtx = document.getElementById("gaugeHealthCanvas").getContext("2d");
+      const missed = conducted - attended;
+
+      if (healthGaugeChartInstance) healthGaugeChartInstance.destroy();
+      healthGaugeChartInstance = new Chart(gaugeCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Attended & Credited', 'Absences'],
+          datasets: [{
+            data: [attended, missed],
+            backgroundColor: ['#6750A4', '#B3261E'],
+            hoverBackgroundColor: ['#503E82', '#8C1D18'],
+            borderWidth: 0,
+            cutout: '78%'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.label}: ${ctx.raw} classes`
+              }
+            }
+          }
+        }
+      });
+
+      // 2. Ceiling Comparison Bar Chart
+      const barCtx = document.getElementById("ceilingBarCanvas").getContext("2d");
+      const labels = rows.map(r => r.slotKey);
+      const currentVals = rows.map(r => r.currentEffectivePct);
+      const ceilingVals = rows.map(r => r.maxCeilingPct);
+
+      if (ceilingBarChartInstance) ceilingBarChartInstance.destroy();
+      ceilingBarChartInstance = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Current %',
+              data: currentVals,
+              backgroundColor: currentVals.map(v => v < 75 ? '#B3261E' : '#6750A4'),
+              borderRadius: 8
+            },
+            {
+              label: 'Max Ceiling %',
+              data: ceilingVals,
+              backgroundColor: '#A5C8D4',
+              borderRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              min: 0,
+              max: 100,
+              ticks: { stepSize: 25, font: { size: 10, family: 'Plus Jakarta Sans' } },
+              grid: { color: 'rgba(121, 116, 126, 0.12)' }
+            },
+            x: {
+              ticks: { font: { size: 10, weight: 'bold', family: 'Plus Jakarta Sans' } },
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { boxWidth: 10, font: { size: 10, family: 'Plus Jakarta Sans' } }
+            }
+          }
+        }
+      });
+    }
+
+    // 8. PHASE 2 AI ATTENDANCE ADVISOR ENGINE
+    function handleAdvisorMessageSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById("aiChatInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendChatMessage("user", text);
+      input.value = "";
+
+      // Instant Natural Math & Scenario Evaluation
+      setTimeout(() => {
+        const reply = evaluateAdvisorScenario(text, activeAnalyticsModel);
+        appendChatMessage("ai", reply);
+      }, 300);
+    }
+
+    function appendChatMessage(sender, msg) {
+      const container = document.getElementById("aiChatConversation");
+      const wrap = document.createElement("div");
+
+      if (sender === "user") {
+        wrap.className = "flex items-start justify-end gap-2";
+        wrap.innerHTML = `
+          <div class="bg-m3-primary text-white p-3.5 rounded-3xl rounded-tr-sm shadow-sm max-w-[85%] leading-relaxed text-xs sm:text-sm font-medium">
+            ${msg}
+          </div>
+          <div class="w-8 h-8 rounded-2xl bg-m3-surfaceContainerHighest text-m3-onSurface flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-xs">
+            You
+          </div>
+        `;
+      } else {
+        wrap.className = "flex items-start gap-2.5";
+        wrap.innerHTML = `
+          <div class="w-8 h-8 rounded-2xl bg-m3-primary text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 shadow-sm">
+            AI
+          </div>
+          <div class="bg-white border border-m3-outlineVariant/50 text-m3-onSurface p-3.5 rounded-3xl rounded-tl-sm shadow-xs max-w-[85%] leading-relaxed space-y-2 text-xs sm:text-sm">
+            ${msg}
+          </div>
+        `;
+      }
+      container.appendChild(wrap);
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function evaluateAdvisorScenario(query, model) {
+      const q = query.toLowerCase();
+      const refDate = new Date(document.getElementById("systemDateInput").value);
+
+      // Scenario 1: Leave & Sick Day Impact
+      const leaveMatch = q.match(/(\d+)[ -]day/);
+      if (q.includes("sick") || q.includes("leave") || leaveMatch) {
+        const dayCount = leaveMatch ? parseInt(leaveMatch[1]) : 3;
+
+        // Trace the next N working weekdays and periods scheduled
+        let simDate = new Date(refDate);
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const affectedSlots = {};
+        let daysFound = 0;
+        let daysInspected = [];
+
+        for (let i = 1; i <= 14; i++) {
+          simDate.setDate(simDate.getDate() + 1);
+          const dayIdx = simDate.getDay();
+          if (dayIdx >= 1 && dayIdx <= 5) {
+            daysFound++;
+            const name = dayNames[dayIdx];
+            daysInspected.push(name);
+            const periods = model.sectionMeta.grid[name] || [];
+            periods.forEach(s => {
+              if (s) affectedSlots[s] = (affectedSlots[s] || 0) + 1;
+            });
+            if (daysFound >= dayCount) break;
+          }
+        }
+
+        let dangerDrops = [];
+        let summaryLines = [];
+
+        model.rows.forEach(r => {
+          const missed = affectedSlots[r.slotKey] || 0;
+          if (missed > 0) {
+            const newDone = r.conductedSoFar + missed;
+            const newAtt = r.effectiveAttended;
+            const newPct = ((newAtt / newDone) * 100).toFixed(1);
+
+            summaryLines.push(`<strong>${r.slot.name}</strong> [Slot ${r.slotKey}]: ${r.currentEffectivePct}% ➔ <span class="${newPct < 75 ? 'text-m3-error font-extrabold' : 'text-m3-onSurface font-bold'}">${newPct}%</span> (-${missed} periods)`);
+
+            if (newPct < 75) {
+              dangerDrops.push({ name: r.slot.name, pct: newPct });
+            }
+          }
+        });
+
+        if (summaryLines.length === 0) {
+          return `Your proposed ${dayCount}-day leave falls on days with no lectures scheduled for your cohort[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]. Your attendance remains unchanged!`;
+        }
+
+        let res = `<strong>Leave Consequence Simulation (${dayCount} working days: ${daysInspected.join(', ')}):</strong><br/><br/>`;
+        res += `Missed periods scheduled in your timetable[cite: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:<br/>`;
+        res += `<ul class="list-disc ml-4 space-y-1 my-2 text-xs">${summaryLines.map(s => `<li>${s}</li>`).join('')}</ul>`;
+
+        if (dangerDrops.length > 0) {
+          res += `<div class="p-3 bg-m3-errorContainer border border-m3-error text-m3-onErrorContainer rounded-2xl font-bold mt-2">
+            ⚠️ <strong>DANGER DETECTED:</strong> This absence will directly drag <strong>${dangerDrops.length} course(s) below the 75% statutory bar</strong>: ${dangerDrops.map(d => `${d.name} (${d.pct}%)`).join(", ")}. Do not take this absence without certified medical clearance!
+          </div>`;
+        } else {
+          res += `<div class="p-3 bg-m3-successContainer border border-m3-success text-m3-onSuccessContainer rounded-2xl font-bold mt-2">
+            ✅ <strong>SAFE TO TAKE:</strong> All affected subjects will remain securely above 75% following this ${dayCount}-day leave.
+          </div>`;
+        }
+        return res;
+      }
+
+      // Scenario 2: Bunk / Skip Allowance
+      if (q.includes("bunk") || q.includes("miss") || q.includes("skip")) {
+        const lines = model.rows.map(r => `<li><strong>${r.slot.name}</strong>: You can safely bunk <strong>${r.maxMissable}</strong> more class(es) and remain ≥75%.</li>`).join("");
+        return `<strong>Bunk Allowance Index for ${model.sectionKey}:</strong><br/>
+        Here is your margin of missable classes before hitting the 75% danger zone:
+        <ul class="list-disc ml-4 my-2 space-y-1 text-xs">${lines}</ul>
+        <em>Advice: Keep an emergency buffer of 2 classes for unforeseen sickness or travel!</em>`;
+      }
+
+      // Scenario 3: Target 90% or Excellence
+      if (q.includes("90%") || q.includes("90 percent") || q.includes("excellence")) {
+        let attainable = true;
+        const lines = model.rows.map(r => {
+          if (r.req90 > r.rem) {
+            attainable = false;
+            return `<li><strong>${r.slot.name}</strong>: ❌ Mathematically impossible to reach 90% (Max ceiling is ${r.maxCeilingPct}%).</li>`;
+          } else {
+            return `<li><strong>${r.slot.name}</strong>: Attend <strong>${r.req90}</strong> out of ${r.rem} remaining periods.</li>`;
+          }
+        }).join("");
+
+        return `<strong>90% Target Feasibility Breakdown:</strong><br/>
+        <ul class="list-disc ml-4 my-2 space-y-1 text-xs">${lines}</ul>
+        ${attainable 
+          ? `<span class="text-m3-success font-extrabold">🎉 Outstanding! You can achieve 90%+ across all registered subjects with disciplined attendance.</span>` 
+          : `<span class="text-amber-800 font-bold">⚠️ Past absences prevent 90% in some subjects, but your 75% exam eligibility remains easily achievable.</span>`}`;
+      }
+
+      // Default Response
+      return `<strong>Academic Status Overview:</strong><br/>
+      • Section: <strong>${model.sectionKey}</strong> (${model.sectionMeta.venue})[cite: 1, 2, 3, 4, 5, 6, 7, 8, 10]<br/>
+      • Current Weighted Attendance: <strong>${model.overallPercentage}%</strong><br/>
+      • Total Horizon Classes Left: <strong>${model.aggRemaining}</strong><br/>
+      • Active Detention Alerts: <strong>${model.irreversibleAlerts.length}</strong> subject(s)<br/><br/>
+      Ask me questions like <em>"If I take 2 days off next week, what happens?"</em> or <em>"How many classes can I skip in my hardest subject?"</em>`;
+    }
+  </script>
+</body>
+</html>
